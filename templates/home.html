@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Amazon CPU Stock</h1>
+    <table style="width:100%">
+      <tr>
+        <th style="width:60%">Name</th>
+        <th >Availability</th>
+        <th>Price</th> 
+      </tr>
+      {% for cpu in cpus %}
+        <tr>
+          <th><a href= {{ cpu[2] }} target="_blank">{{ cpu[1] }}</a></th>
+          {% if cpu[3] == "1" %}
+            <th>In Stock</th>
+          {% else %}
+            <th>Out of Stock</th>
+          {% endif %}
+          <th>$ {{ cpu[4] }}</th> 
+        </tr>
+      {% endfor %}
+    </table>   
+{% endblock content %}
