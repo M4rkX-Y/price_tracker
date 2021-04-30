@@ -44,3 +44,10 @@ def get_price(id):
         c.execute("SELECT price FROM amazon WHERE id = %s", index)
         price = c.fetchall()
         return price
+
+def add_log(title, pchange):
+        conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
+        c = conn.cursor()
+        cpu = (title, pchange)
+        c.execute("INSERT INTO log (title, price_change, date) VALUES (%s, %s, NOW())", cpu)
+        conn.commit()

@@ -79,6 +79,7 @@ def bot_refresh():
         url = link[1]
         user_agent = ua_randomize()
         title, new_availability, new_price, error_count = refresh(url, user_agent, error_count)
+        pchange = price_change(id, new_price)
         old_availability = cpudb.get_ava(id)
         if old_availability == [('1',)] and new_availability == False:
             print(title, "no longer in stock")
@@ -89,11 +90,13 @@ def bot_refresh():
     print("Finished, with", error_count, "block(s)")
 
 
-def price_change(id, new_price):
+def price_change(id, nprice):
     pricelist = cpudb.get_price(id)
     price2 = pricelist[0]
-    old_price = float(price2[0])
-    print(old_price)
+    oprice = price2[0]
+    new_price = float(nprice)
+    pchange = new_price - old_price
+    return pchange
+#still have to work on the logic of this part. Making sure the real time table works and the log table have enough data to plot a graph
 
-
-price_change(3,12)
+bot_refresh()
