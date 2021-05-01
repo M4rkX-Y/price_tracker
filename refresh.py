@@ -14,7 +14,6 @@ def ua_randomize():
     user_agent_list = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36',
     'Mozilla/5.0 (Windows NT 6.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36 OPR/42.0.2393.94',
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36 OPR/67.0.3575.97',
@@ -33,6 +32,7 @@ def refresh(url, user_agent, error_count):
     if bb is None:
         error_count = error_count + 1
         print("User agent", user_agent, "got busted")
+# make the error system better
     else:
         ts = soup.find('div', id='titleSection')
         title = " ".join(ts.find('span', id='productTitle').text.split())
@@ -79,24 +79,33 @@ def bot_refresh():
         url = link[1]
         user_agent = ua_randomize()
         title, new_availability, new_price, error_count = refresh(url, user_agent, error_count)
-        pchange = price_change(id, new_price)
+
+        price_change(id, title, new_price)
+
         old_availability = cpudb.get_ava(id)
         if old_availability == [('1',)] and new_availability == False:
             print(title, "no longer in stock")
         if old_availability == [('0',)] and new_availability == True:
             print(title, "is back in stock")
+    
+
         cpudb.update_cpu(title, new_availability, new_price, id)
         sleep(1)
     print("Finished, with", error_count, "block(s)")
 
 
-def price_change(id, nprice):
+def price_change(id, title, nprice):
     pricelist = cpudb.get_price(id)
     price2 = pricelist[0]
     oprice = price2[0]
-    new_price = float(nprice)
-    pchange = new_price - old_price
-    return pchange
-#still have to work on the logic of this part. Making sure the real time table works and the log table have enough data to plot a graph
+    if oprice is None and nprice is not None:
+        new_price = float(nprice)
+        pchange = new_price
+        cpudb.add_log(title, pchange)
+    elif nprice is not None:
+        new_price = float(nprice)
+        old_price = float(oprice)
+        pchange = new_price - old_price
+        cpudb.add_log(title, pchange)
 
 bot_refresh()
