@@ -24,15 +24,14 @@ def ua_randomize():
     return user_agent
 
 
-def refresh(url, user_agent, error_count):
+def refresh(url, user_agent, bad_ua):
     headers = {"User-Agent": user_agent, "Accept-Encoding":"gzip, deflate", "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "DNT":"1","Connection":"close", "Upgrade-Insecure-Requests":"1"} 
     page = requests.get(url, headers = headers).text 
     soup = BeautifulSoup(page,"lxml")
     bb = soup.find('div', id='buybox')
     if bb is None:
-        error_count = error_count + 1
         print("User agent", user_agent, "got busted")
-# make the error system better
+        bad_ua.add(user_agent)
     else:
         ts = soup.find('div', id='titleSection')
         title = " ".join(ts.find('span', id='productTitle').text.split())
@@ -67,45 +66,53 @@ def refresh(url, user_agent, error_count):
         else:
             availability = False
         print("done")
-        return title, availability, price, error_count
+        return title, availability, price, bad_ua
 
 
 def bot_refresh():
     links = cpudb.get_url()
     error_count = 0
+    bad_ua = {}
     for index, link in enumerate(links):
         print(index+1, "/320 working")
         id = link[0]
         url = link[1]
         user_agent = ua_randomize()
-        title, new_availability, new_price, error_count = refresh(url, user_agent, error_count)
+        test = refresh(url, user_agent, bad_ua)
+        bad_ua = test[3]
+        if bad_ua is not None:
+            error_count += 1
+        else:
+            title = test[0]
+            new_availability = test[1]
+            new_price = test[2]
 
-        price_change(id, title, new_price)
+            price_change(id, title, new_price)
 
-        old_availability = cpudb.get_ava(id)
-        if old_availability == [('1',)] and new_availability == False:
-            print(title, "no longer in stock")
-        if old_availability == [('0',)] and new_availability == True:
-            print(title, "is back in stock")
-    
+            old_availability = cpudb.get_ava(id)
+            if old_availability == [('1',)] and new_availability == False:
+                print(title, "no longer in stock")
+            if old_availability == [('0',)] and new_availability == True:
+                print(title, "is back in stock")
 
-        cpudb.update_cpu(title, new_availability, new_price, id)
-        sleep(1)
-    print("Finished, with", error_count, "block(s)")
+            cpudb.update_cpu(title, new_availability, new_price, id)
+            sleep(1)
+    error = "Finished, with", error_count, "block(s)"
+    if error_count != 0:
+        cpudb.add_error_log(error)
+    print(error)
+    print(bad_ua)
 
 
 def price_change(id, title, nprice):
     pricelist = cpudb.get_price(id)
     price2 = pricelist[0]
     oprice = price2[0]
-    if oprice is None and nprice is not None:
-        new_price = float(nprice)
-        pchange = new_price
-        cpudb.add_log(title, pchange)
-    elif nprice is not None:
+    if oprice is not None and nprice is not None:
         new_price = float(nprice)
         old_price = float(oprice)
-        pchange = new_price - old_price
-        cpudb.add_log(title, pchange)
+        if new_price != old_price:
+            pchange = new_price - old_price
+            cpudb.add_log(title, pchange)
 
 bot_refresh()

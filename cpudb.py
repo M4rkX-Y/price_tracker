@@ -51,3 +51,11 @@ def add_log(title, pchange):
         cpu = (title, pchange)
         c.execute("INSERT INTO log (title, price_change, date) VALUES (%s, %s, NOW())", cpu)
         conn.commit()
+
+def add_error_log(error):
+        conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
+        c = conn.cursor()
+        c.execute("INSERT INTO error_log (error, date) VALUES (%s, NOW())", error)
+        conn.commit()
+
+#need test here
