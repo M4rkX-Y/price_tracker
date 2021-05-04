@@ -19,7 +19,7 @@ def update_cpu(title, availability, price, id):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
         update = (title, availability, price, id)
-        c.execute("UPDATE amazon SET title = %s, availability = %s, price = %s WHERE id = %s", update)
+        c.execute("UPDATE amazon SET title = %s, availability = %s, price = %s , date = NOW() WHERE id = %s", update)
         conn.commit()
 
 def get_all():

@@ -24,14 +24,14 @@ def ua_randomize():
     return user_agent
 
 
-def refresh(url, user_agent, bad_ua):
+def refresh(url, user_agent, error_count):
     headers = {"User-Agent": user_agent, "Accept-Encoding":"gzip, deflate", "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "DNT":"1","Connection":"close", "Upgrade-Insecure-Requests":"1"} 
     page = requests.get(url, headers = headers).text 
     soup = BeautifulSoup(page,"lxml")
     bb = soup.find('div', id='buybox')
     if bb is None:
         print("User agent", user_agent, "got busted")
-        bad_ua.add(user_agent)
+        error_count = error_count + 1
     else:
         ts = soup.find('div', id='titleSection')
         title = " ".join(ts.find('span', id='productTitle').text.split())
@@ -66,27 +66,25 @@ def refresh(url, user_agent, bad_ua):
         else:
             availability = False
         print("done")
-        return title, availability, price, bad_ua
+        return title, availability, price, error_count
 
 
 def bot_refresh():
     links = cpudb.get_url()
     error_count = 0
-    bad_ua = {}
     for index, link in enumerate(links):
         print(index+1, "/320 working")
         id = link[0]
         url = link[1]
         user_agent = ua_randomize()
-        test = refresh(url, user_agent, bad_ua)
-        bad_ua = test[3]
-        if bad_ua is not None:
-            error_count += 1
-        else:
+        check = error_count
+        test = refresh(url, user_agent, error_count)
+        test_error = test[3]
+        if check == test_error:
             title = test[0]
             new_availability = test[1]
             new_price = test[2]
-
+            
             price_change(id, title, new_price)
 
             old_availability = cpudb.get_ava(id)
@@ -98,10 +96,10 @@ def bot_refresh():
             cpudb.update_cpu(title, new_availability, new_price, id)
             sleep(1)
     error = "Finished, with", error_count, "block(s)"
+    print(error)
     if error_count != 0:
         cpudb.add_error_log(error)
-    print(error)
-    print(bad_ua)
+    
 
 
 def price_change(id, title, nprice):
