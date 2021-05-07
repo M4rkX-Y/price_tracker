@@ -57,5 +57,11 @@ def add_error_log(error):
         c = conn.cursor()
         c.execute("INSERT INTO error_log (error, date) VALUES (%s, NOW())", error)
         conn.commit()
-
 #need test here
+
+def add_url(url):
+        conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
+        c = conn.cursor()
+        cpu = (url,)
+        c.execute("INSERT INTO newegg (url) VALUE (%s)", cpu)
+        conn.commit()
