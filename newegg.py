@@ -25,7 +25,7 @@ def ua_randomize():
 
 def refresh(user_agent):
     headers = {"User-Agent": user_agent, "Accept-Encoding":"gzip, deflate", "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "DNT":"1","Connection":"close", "Upgrade-Insecure-Requests":"1"} 
-    for i in range(11,15):
+    for i in range(25):
         pn = str(i)
         url = "https://www.newegg.com/p/pl?d=cpu&N=100007671&isdeptsrh=1&page=" + pn
         page = requests.get(url, headers = headers).text 
@@ -37,6 +37,7 @@ def refresh(user_agent):
             for col in info.find_all("div", class_="item-container"):
                 test = col.find("a", class_="item-title")['href']
                 cpudb.add_url(test)
+        print (i+1, "/25")
         sleep(1)
 
 refresh(ua_randomize())
