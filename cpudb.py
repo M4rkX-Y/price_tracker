@@ -49,11 +49,11 @@ def get_amz_price(id):
 
 
 
-def add_log(title, pchange):
+def add_log(title, pchange, website):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
-        cpu = (title, pchange)
-        c.execute("INSERT INTO log (title, price_change, date) VALUES (%s, %s, NOW())", cpu)
+        log = (title, pchange, website)
+        c.execute("INSERT INTO log (title, price_change, website, date) VALUES (%s, %s, %s, NOW())", log)
         conn.commit()
 
 def add_error_log(error, website):

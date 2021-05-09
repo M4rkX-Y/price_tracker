@@ -104,17 +104,15 @@ def price_change(id, title, nprice):
     price2 = pricelist[0]
     oprice = price2[0]
     if oprice is not None and nprice is not None:
-        con_nprice = nprice.replace(",","")
-        con_oprice = oprice.replace(",","")
-        new_price = float(con_nprice)
-        old_price = float(con_oprice)
+        new_price = float(nprice.replace(",",""))
+        old_price = float(oprice.replace(",",""))
         if new_price != old_price:
             pchange = new_price - old_price
-            cpudb.add_log(title, pchange)
+            cpudb.add_log(title, pchange, "amz")
     elif oprice is None and nprice is not None:
-        new_price = float(nprice)
+        new_price = float(nprice.replace(",",""))
         pchange = new_price
-        cpudb.add_log(title, pchange)
+        cpudb.add_log(title, pchange, "amz")
 
 def ava_change(id, title, new_availability):
     old_availability = cpudb.get_amz_ava(id)
