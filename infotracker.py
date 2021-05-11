@@ -5,7 +5,7 @@ import cpudb
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '2f5383e0327903399de136d7efc7e436'
-cpus = cpudb.get_all()
+cpus = cpudb.get_amz_all()
 
 
 @app.route("/")
