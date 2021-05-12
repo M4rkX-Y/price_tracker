@@ -1,6 +1,6 @@
 import mysql.connector
 
-def add_cpu(title, url, availability, price):
+def add_amz_cpu(title, url, availability, price):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
         cpu = (title, url, availability, price)
@@ -49,11 +49,32 @@ def get_amz_price(id):
 
 
 
-def add_log(title, pchange, website):
+
+def update_time(table, id):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
-        log = (title, pchange, website)
-        c.execute("INSERT INTO log (title, price_change, website, date) VALUES (%s, %s, %s, NOW())", log)
+        web = (table, id)
+        c.execute("UPDATE %s SET date = NOW() WHERE id = %s", web)
+        conn.commit()
+
+def get_time(table, id):
+        conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
+        c = conn.cursor()
+        index = (table, id)
+        c.execute("SELECT date FROM %s WHERE id = %s", index)
+        date = c.fetchall()
+        return date
+
+
+
+
+
+
+def add_log(title, pchange, website, date):
+        conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
+        c = conn.cursor()
+        log = (title, pchange, website, date)
+        c.execute("INSERT INTO log (title, price_change, website, date) VALUES (%s, %s, %s, %s)", log)
         conn.commit()
 
 def add_error_log(error, website):

@@ -79,6 +79,7 @@ def bot_refresh():
         check = test[3]
         if check is False:
             error_count = error_count+1
+            cpudb.update_time("amazon", id)
             print("error")
         else:
             title = test[0]
@@ -107,12 +108,8 @@ def price_change(id, title, nprice):
         new_price = float(nprice.replace(",",""))
         old_price = float(oprice.replace(",",""))
         if new_price != old_price:
-            pchange = new_price - old_price
-            cpudb.add_log(title, pchange, "amz")
-    elif oprice is None and nprice is not None:
-        new_price = float(nprice.replace(",",""))
-        pchange = new_price
-        cpudb.add_log(title, pchange, "amz")
+            date = cpudb.get_time("amazon", id)
+            cpudb.add_log(title, old_price, "amz", date)
 
 def ava_change(id, title, new_availability):
     old_availability = cpudb.get_amz_ava(id)
