@@ -4,28 +4,28 @@ def add_amz_cpu(title, url, availability, price):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
         cpu = (title, url, availability, price)
-        c.execute("INSERT INTO amazon (title, url, availability, price) VALUES (%s, %s, %s, %s)", cpu)
+        c.execute("INSERT INTO amz (title, url, availability, price) VALUES (%s, %s, %s, %s)", cpu)
         conn.commit()
 
 def get_amz_url():
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
-        c.execute("SELECT id, url FROM amazon")
+        c.execute("SELECT id, url FROM amz")
         links = c.fetchall()
         return links
 
 
-def update_amz_cpu(title, availability, price, id):
+def update_amz_cpu(availability, price, id):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
-        update = (title, availability, price, id)
-        c.execute("UPDATE amazon SET title = %s, availability = %s, price = %s , date = NOW() WHERE id = %s", update)
+        update = (availability, price, id)
+        c.execute("UPDATE amz SET availability = %s, price = %s , date = NOW() WHERE id = %s", update)
         conn.commit()
 
 def get_amz_all():
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
-        c.execute("SELECT id, title, url, availability, price FROM amazon")
+        c.execute("SELECT id, title, url, availability, price FROM amz")
         all = c.fetchall()
         return all
 
@@ -33,7 +33,7 @@ def get_amz_ava(id):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
         index = (id, )
-        c.execute("SELECT availability FROM amazon WHERE id = %s", index)
+        c.execute("SELECT availability FROM amz WHERE id = %s", index)
         ava = c.fetchall()
         return ava
 
@@ -41,29 +41,32 @@ def get_amz_price(id):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
         index = (id, )
-        c.execute("SELECT price FROM amazon WHERE id = %s", index)
+        c.execute("SELECT price FROM amz WHERE id = %s", index)
         price = c.fetchall()
         return price
 
-
-
-
-
-
-def update_time(table, id):
+def update_amz_time(id):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
-        web = (table, id)
-        c.execute("UPDATE %s SET date = NOW() WHERE id = %s", web)
+        web = (id, )
+        c.execute("UPDATE amz SET date = NOW() WHERE id = %s", web)
         conn.commit()
 
-def get_time(table, id):
+def get_amz_time(id):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
-        index = (table, id)
-        c.execute("SELECT date FROM %s WHERE id = %s", index)
+        index = (id, )
+        c.execute("SELECT date FROM amz WHERE id = %s", index)
         date = c.fetchall()
         return date
+
+def add_amz_cpu(title, url):
+        conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
+        c = conn.cursor()
+        cpu = (title, url)
+        c.execute("INSERT INTO amz (title, url) VALUE (%s, %s)", cpu)
+        conn.commit()
+
 
 
 
@@ -89,32 +92,36 @@ def add_error_log(error, website):
 
 
 
+
+
+
+
 def add_nwe_url(url):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
         cpu = (url,)
-        c.execute("INSERT INTO newegg (url) VALUE (%s)", cpu)
+        c.execute("INSERT INTO nwe (url) VALUE (%s)", cpu)
         conn.commit()
 
 def get_nwe_url():
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
-        c.execute("SELECT id, url FROM newegg")
+        c.execute("SELECT id, url FROM nwe")
         links = c.fetchall()
         return links
 
-def update_nwe_cpu(title, availability, price, id):
+def update_nwe_cpu(availability, price, id):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
-        update = (title, availability, price, id)
-        c.execute("UPDATE newegg SET title = %s, availability = %s, price = %s , date = NOW() WHERE id = %s", update)
+        update = (availability, price, id)
+        c.execute("UPDATE nwe SET availability = %s, price = %s , date = NOW() WHERE id = %s", update)
         conn.commit()
 
 def get_nwe_price(id):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
         index = (id, )
-        c.execute("SELECT price FROM newegg WHERE id = %s", index)
+        c.execute("SELECT price FROM nwe WHERE id = %s", index)
         price = c.fetchall()
         return price
 
@@ -122,6 +129,48 @@ def get_nwe_ava(id):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
         index = (id, )
-        c.execute("SELECT availability FROM newegg WHERE id = %s", index)
+        c.execute("SELECT availability FROM nwe WHERE id = %s", index)
         ava = c.fetchall()
         return ava
+
+def get_nwe_all():
+        conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
+        c = conn.cursor()
+        c.execute("SELECT url, availability, price FROM nwe")
+        all = c.fetchall()
+        return all
+
+def add_nwe_cpu(title, url):
+        conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
+        c = conn.cursor()
+        cpu = (title, url)
+        c.execute("INSERT INTO nwe (title, url) VALUE (%s, %s)", cpu)
+        conn.commit()
+
+def update_nwe_time(id):
+        conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
+        c = conn.cursor()
+        web = (id, )
+        c.execute("UPDATE nwe SET date = NOW() WHERE id = %s", web)
+        conn.commit()
+
+def get_nwe_time(id):
+        conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
+        c = conn.cursor()
+        index = (id, )
+        c.execute("SELECT date FROM nwe WHERE id = %s", index)
+        date = c.fetchall()
+        return date
+        
+
+
+
+
+
+def get_cpulist(id):
+        conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
+        c = conn.cursor()
+        index = (id, )
+        c.execute("SELECT title, price FROM cpulist WHERE id = %s", index)
+        all = c.fetchall()
+        return all

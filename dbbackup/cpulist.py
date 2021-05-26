@@ -33,7 +33,5 @@ def refresh(url, user_agent):
     for col in tb.find_all("tr"):
         title = col.find("a", class_="OneLinkNoTx").text
         market_price = " ".join(col.find("td", class_="list-tiny-none").text.replace("$","").split())
-        print(title)
-        print(market_price)
 
 refresh("https://benchmarks.ul.com/compare/best-cpus?amount=0&sortBy=POPULARITY&reverseOrder=true&types=DESKTOP&minRating=0", ua_randomize())

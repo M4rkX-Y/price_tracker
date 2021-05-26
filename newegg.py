@@ -30,54 +30,62 @@ def refresh(user_agent, url):
     soup = BeautifulSoup(page,"lxml")
     check1 = soup.find("div", class_="page-content")
     check2 = soup.find("div", id="container")
-    title, availability, price = None, None, None
+    title, availability, price, check = None, None, None, False
     if check1 is None:
         if check2 is None:
             print("error")
+            check = True
         else:
             pr = check2.find("div", class_="wrapper")
             title = pr.find("span", itemprop="name").text
             bb = check2.find("div", class_="grpOptions")
             price = bb.find("div", class_="current")['content']
             availability = False
+            print("done")
     else:
         bb = check1.find("div", class_="product-buy-box")
-        check3 = bb.find("li", class_="price-current")
-        if check3 is None:
-            print("error")
-        else:
-            price = " ".join(bb.find("li", class_="price-current").text.replace("$","").split())
-            pr = check1.find("div", class_="product-wrap")
-            title = pr.find("h1", class_="product-title").text
-            ava = pr.find("div", class_="product-inventory").text
-            arr1 = re.search("^In *", ava)
-            if arr1:
-                availability = True
+        if bb is not None:
+            check3 = bb.find("li", class_="price-current")
+            if check3 is None:
+                print("error")
+                check = True
             else:
-                availability = False
+                price = " ".join(bb.find("li", class_="price-current").text.replace("$","").split())
+                pr = check1.find("div", class_="product-wrap")
+                title = pr.find("h1", class_="product-title").text
+                ava = pr.find("div", class_="product-inventory").text
+                arr1 = re.search("^In *", ava)
+                if arr1:
+                    availability = True
+                else:
+                    availability = False
+                print("done")
+        else:
             print("done")
-    return title, availability, price
+    return title, availability, price, check
 
 def bot_refresh():
     links = cpudb.get_nwe_url()
     error_count = 0
     for index, link in enumerate(links):
-        print(index+1, "/717")
+        print(index+1, "/176")
         id = link[0]
         url = link[1]
         user_agent = ua_randomize()
-        title, new_availability, new_price = refresh(user_agent, url)
-        if new_price is None:
+        title, new_availability, new_price, check = refresh(user_agent, url)
+        if check is True:
             error_count = error_count+1
+            cpudb.update_nwe_time(id)
         else:
             price_change(id, title, new_price)
             ava_change(id, title, new_availability)
-            cpudb.update_nwe_cpu(title, new_availability, new_price, id)
-        sleep(3)
+            cpudb.update_nwe_cpu(new_availability, new_price, id)
+        sleep(2)
     error = "Finished with", error_count, "blocks"
     print(error)
     if error_count != 0:
-        cpudb.add_error_log(error, "nwe")
+        error_message = error[0]
+        cpudb.add_error_log(error_message, "nwe")
 
 def price_change(id, title, nprice):
     pricelist = cpudb.get_nwe_price(id)
@@ -87,12 +95,10 @@ def price_change(id, title, nprice):
         new_price = float(nprice.replace(",",""))
         old_price = float(oprice.replace(",",""))
         if new_price != old_price:
-            pchange = new_price - old_price
-            cpudb.add_log(title, pchange, "nwe")
-    elif oprice is None and nprice is not None:
-        new_price = float(nprice.replace(",",""))
-        pchange = new_price
-        cpudb.add_log(title, pchange, "nwe")
+            d1 = cpudb.get_nwe_time(id)
+            d2 = d1[0]
+            date = d2[0]
+            cpudb.add_log(title, old_price, "nwe", date)
 
 def ava_change(id, title, new_availability):
     old_availability = cpudb.get_nwe_ava(id)
@@ -100,6 +106,5 @@ def ava_change(id, title, new_availability):
         print(title, "no longer in stock")
     if old_availability == [('0',)] and new_availability == True:
         print(title, "is back in stock")
-
 
 bot_refresh()

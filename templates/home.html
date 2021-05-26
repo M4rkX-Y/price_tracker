@@ -1,22 +1,31 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Amazon CPU Stock</h1>
+    <h1>CPU Stock</h1>
     <table style="width:100%">
       <tr>
         <th style="width:60%">Name</th>
-        <th >Availability</th>
-        <th>Price</th> 
+        <th >Amazon</th>
+        <th>Newegg</th> 
       </tr>
-      {% for cpu in cpus %}
-        <tr>
-          <th><a href= {{ cpu[2] }} target="_blank">{{ cpu[1] }}</a></th>
+      {% for cpu in all %}
+      <tr>
+          <th>{{ cpu[1] }}</th>
           {% if cpu[3] == "1" %}
-            <th>In Stock</th>
+            <th><a href= {{ cpu[2] }} target="_blank" style="color:green">$ {{ cpu[4] }}</a></th>
           {% else %}
-            <th>Out of Stock</th>
+            <th><a href= {{ cpu[2] }} target="_blank" style="color:red">$ {{ cpu[4] }}</a></th>
           {% endif %}
-          <th>$ {{ cpu[4] }}</th> 
-        </tr>
+          {% if cpu[6] == "1" %}
+            <th><a href= {{ cpu[5] }} target="_blank" style="color:green">$ {{ cpu[7] }}</a></th>
+          {% else %}
+            <th><a href= {{ cpu[5] }} target="_blank" style="color:red">$ {{ cpu[7] }}</a></th>
+          {% endif %} 
+      </tr>
       {% endfor %}
     </table>   
 {% endblock content %}
+
+
+
+
+          

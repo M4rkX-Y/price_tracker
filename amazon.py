@@ -42,20 +42,23 @@ def refresh(url, user_agent):
             if check_2 is None:
                 if check_3 is None:
                     if check_4 is None:
-                        price = " ".join(bb.find('span', id='price_inside_buybox').text.replace("$","").split())
+                        p = " ".join(bb.find('span', id='price_inside_buybox').text.replace("$","").split())
                         ava = " ".join(bb.find('div', id='availability').text.split())
+                        price = float(p.replace(",", ""))
                     else:
                         ava = "False"
                         price = None
                 else:   
-                    price = " ".join(bb.find('div', id='buyNew_noncbb').text.replace("$","").split())
+                    p = " ".join(bb.find('div', id='buyNew_noncbb').text.replace("$","").split())
                     ava = "In Stock."
+                    price = float(p.replace(",", ""))
             else:
                 ava = "False"
                 price = None
         else:
             ava = " ".join(bb.find('div', id='availability').text.split())
-            price = " ".join(check_1.find('span', id='newBuyBoxPrice').text.replace("$","").split())
+            p = " ".join(check_1.find('span', id='newBuyBoxPrice').text.replace("$","").split())
+            price = float(p.replace(",", ""))
         arr1 = re.search("^In *", ava)
         arr2 = re.search("^Only.*soon.$", ava)
         if arr1:
@@ -71,7 +74,7 @@ def bot_refresh():
     links = cpudb.get_amz_url()
     error_count = 0
     for index, link in enumerate(links):
-        print(index+1, "/320")
+        print(index+1, "/176")
         id = link[0]
         url = link[1]
         user_agent = ua_randomize()
@@ -79,7 +82,7 @@ def bot_refresh():
         check = test[3]
         if check is False:
             error_count = error_count+1
-            cpudb.update_time("amazon", id)
+            cpudb.update_amz_time(id)
             print("error")
         else:
             title = test[0]
@@ -90,7 +93,7 @@ def bot_refresh():
 
             ava_change(id, title, new_availability)
 
-            cpudb.update_amz_cpu(title, new_availability, new_price, id)
+            cpudb.update_amz_cpu(new_availability, new_price, id)
             print("done")
             sleep(1)
     error = "Finished, with", error_count, "blocks"
@@ -100,15 +103,14 @@ def bot_refresh():
     
 
 
-def price_change(id, title, nprice):
+def price_change(id, title, new_price):
     pricelist = cpudb.get_amz_price(id)
     price2 = pricelist[0]
-    oprice = price2[0]
-    if oprice is not None and nprice is not None:
-        new_price = float(nprice.replace(",",""))
-        old_price = float(oprice.replace(",",""))
-        if new_price != old_price:
-            date = cpudb.get_time("amazon", id)
+    old_price = price2[0]
+    if old_price is not None and new_price is not None and new_price != old_price:
+            d1 = cpudb.get_amz_time(id)
+            d2 = d1[0]
+            date = d2[0]
             cpudb.add_log(title, old_price, "amz", date)
 
 def ava_change(id, title, new_availability):
@@ -117,6 +119,5 @@ def ava_change(id, title, new_availability):
         print(title, "no longer in stock")
     if old_availability == [('0',)] and new_availability == True:
         print(title, "is back in stock")
-
 
 bot_refresh()

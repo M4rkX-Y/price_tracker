@@ -1,17 +1,18 @@
 from flask import Flask, render_template, url_for, flash, redirect
 from form import RegistrationForm, LoginForm
 import cpudb
+import combine_list
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '2f5383e0327903399de136d7efc7e436'
-cpus = cpudb.get_amz_all()
 
+all = combine_list.combine()
 
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template('home.html', cpus=cpus)
+    return render_template('home.html', all=all)
 
 
 @app.route("/about")
