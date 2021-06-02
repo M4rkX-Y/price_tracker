@@ -39,7 +39,8 @@ def refresh(user_agent, url):
             pr = check2.find("div", class_="wrapper")
             title = pr.find("span", itemprop="name").text
             bb = check2.find("div", class_="grpOptions")
-            price = bb.find("div", class_="current")['content']
+            p = bb.find("div", class_="current")['content']
+            price = float(p.replace(",", ""))
             availability = False
             print("done")
     else:
@@ -50,7 +51,8 @@ def refresh(user_agent, url):
                 print("error")
                 check = True
             else:
-                price = " ".join(bb.find("li", class_="price-current").text.replace("$","").split())
+                p = " ".join(bb.find("li", class_="price-current").text.replace("$","").split())
+                price = float(p.replace(",", ""))
                 pr = check1.find("div", class_="product-wrap")
                 title = pr.find("h1", class_="product-title").text
                 ava = pr.find("div", class_="product-inventory").text
@@ -87,18 +89,15 @@ def bot_refresh():
         error_message = error[0]
         cpudb.add_error_log(error_message, "nwe")
 
-def price_change(id, title, nprice):
+def price_change(id, title, new_price):
     pricelist = cpudb.get_nwe_price(id)
     price2 = pricelist[0]
-    oprice = price2[0]
-    if oprice is not None and nprice is not None:
-        new_price = float(nprice.replace(",",""))
-        old_price = float(oprice.replace(",",""))
-        if new_price != old_price:
-            d1 = cpudb.get_nwe_time(id)
-            d2 = d1[0]
-            date = d2[0]
-            cpudb.add_log(title, old_price, "nwe", date)
+    old_price = price2[0]
+    if old_price is not None and new_price is not None and new_price != old_price:
+        d1 = cpudb.get_nwe_time(id)
+        d2 = d1[0]
+        date = d2[0]
+        cpudb.add_log(title, old_price, "nwe", date)
 
 def ava_change(id, title, new_availability):
     old_availability = cpudb.get_nwe_ava(id)

@@ -84,7 +84,7 @@ def add_error_log(error, website):
         conn = mysql.connector.connect(host="localhost", user="root", password="Bj64989865", database="cpu")
         c = conn.cursor()
         error = (error, website)
-        c.execute("INSERT INTO error_log (error, website, date) VALUES (%s, ,%s, NOW())", error)
+        c.execute("INSERT INTO error_log (error, website, date) VALUES (%s, %s, NOW())", error)
         conn.commit()
 #need test here
 
