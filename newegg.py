@@ -70,7 +70,7 @@ def bot_refresh():
     links = cpudb.get_nwe_url()
     error_count = 0
     for index, link in enumerate(links):
-        print(index+1, "/176")
+        print("Newegg: {} /176".format(index+1))
         id = link[0]
         url = link[1]
         user_agent = ua_randomize()
@@ -83,11 +83,11 @@ def bot_refresh():
             ava_change(id, title, new_availability)
             cpudb.update_nwe_cpu(new_availability, new_price, id)
         sleep(2)
-    error = "Finished with", error_count, "blocks"
+    error = "Newegg Finished, with {} blocks".format(error_count)
     print(error)
+    print("---------------------------------------------------------")
     if error_count != 0:
-        error_message = error[0]
-        cpudb.add_error_log(error_message, "nwe")
+        cpudb.add_error_log(error, "nwe")
 
 def price_change(id, title, new_price):
     pricelist = cpudb.get_nwe_price(id)
@@ -106,4 +106,3 @@ def ava_change(id, title, new_availability):
     if old_availability == [('0',)] and new_availability == True:
         print(title, "is back in stock")
 
-bot_refresh()

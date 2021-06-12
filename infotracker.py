@@ -1,6 +1,5 @@
 from flask import Flask, render_template, url_for, flash, redirect
 from form import RegistrationForm, LoginForm
-import cpudb
 import combine_list
 
 app = Flask(__name__)

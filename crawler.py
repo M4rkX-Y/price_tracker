@@ -2,7 +2,8 @@ import amazon
 import newegg
 import cpudb
 
-def refresh():
+def run():
     amazon.bot_refresh()
     newegg.bot_refresh()
     
+run()
